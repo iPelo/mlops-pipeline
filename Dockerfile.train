@@ -1,0 +1,15 @@
+FROM python:3.11-slim AS train
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir uv
+
+COPY pyproject.toml README.md ./
+COPY src ./src
+COPY configs ./configs
+COPY scripts ./scripts
+
+RUN uv sync --all-extras
+
+CMD ["uv", "run", "python", "-m", "energy_price_mlops.training.train"]
+
