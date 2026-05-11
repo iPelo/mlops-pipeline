@@ -1,0 +1,61 @@
+[project]
+name = "energy-price-mlops"
+version = "0.1.0"
+description = "End-to-end MLOps pipeline for SMARD electricity price forecasting."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+authors = [
+  { name = "Ilay Rakotondravao" }
+]
+dependencies = [
+  "dvc>=3.58",
+  "evidently>=0.4",
+  "fastapi>=0.115",
+  "hydra-core>=1.3",
+  "lightning>=2.4",
+  "numpy>=1.26",
+  "onnx>=1.17",
+  "onnxruntime>=1.20",
+  "pandas>=2.2",
+  "pydantic>=2.10",
+  "pyarrow>=18.1",
+  "scikit-learn>=1.5",
+  "torch>=2.5",
+  "uvicorn[standard]>=0.32",
+  "wandb>=0.19",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ipykernel>=6.29",
+  "jupyter>=1.1",
+  "locust>=2.32",
+  "mypy>=1.14",
+  "pandas-stubs>=2.2",
+  "pre-commit>=4.0",
+  "pytest>=8.3",
+  "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/energy_price_mlops"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src", "tests"]

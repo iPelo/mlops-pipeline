@@ -1,0 +1,24 @@
+name: smard
+source: SMARD electricity market data
+timestamp_col: timestamp
+target_col: day_ahead_price_eur_mwh
+frequency: 1h
+timezone: Europe/Berlin
+
+split:
+  train_start: "2024-01-01"
+  valid_start: "2024-11-01"
+  test_start: "2024-12-01"
+  test_end: "2025-01-01"
+
+forecasting:
+  context_hours: 168
+  horizon_hours: 24
+
+files:
+  actual_consumption: data/raw/Actual_consumption_202401010000_202501010000_Hour.csv
+  actual_generation: data/raw/Actual_generation_202401010000_202501010000_Hour.csv
+  day_ahead_prices: data/raw/Day-ahead_prices_202401010000_202501010000_Hour.csv
+  processed_train: data/processed/train.parquet
+  processed_valid: data/processed/valid.parquet
+  processed_test: data/processed/test.parquet

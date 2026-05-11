@@ -1,0 +1,83 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python environments and caches
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+htmlcov/
+
+# Secrets and local credentials. Keep examples public-safe.
+.env
+.env.*
+!.env.example
+.envrc
+*.pem
+*.key
+*.p12
+*.pfx
+.netrc
+secrets/
+.streamlit/secrets.toml
+
+# Local experiment outputs
+artifacts/
+checkpoints/
+lightning_logs/
+mlruns/
+outputs/
+wandb/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Data is versioned through DVC, not Git.
+data/raw/**
+data/interim/**
+data/processed/**
+data/external/**
+!data/**/
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+!data/**/*.dvc
+
+# Model exports
+*.ckpt
+*.onnx
+*.pt
+*.pth
+*.pkl
+*.joblib
+*.safetensors
+
+# Python build artifacts
+build/
+dist/
+
+# Editor backups
+*.bak
+*~
+
+# Personal/scratch notes — keep out of the public repo
+README-02-mlops-pipeline.md
+
+# DVC local/cache state. Commit .dvc files and dvc.yaml, not local secrets/cache.
+.dvc/cache/
+.dvc/tmp/
+.dvc/config.local

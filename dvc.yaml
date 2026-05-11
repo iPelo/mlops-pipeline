@@ -1,0 +1,10 @@
+stages:
+  prepare:
+    cmd: python scripts/prepare_data.py --config configs/data/smard.yaml
+    deps:
+      - scripts/prepare_data.py
+      - configs/data/smard.yaml
+      - data/raw
+    outs:
+      - data/processed
+
