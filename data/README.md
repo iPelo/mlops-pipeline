@@ -53,11 +53,29 @@ Recommended columns:
 
 ## Source Notes
 
-Record the exact SMARD export settings here:
+SMARD export settings for the raw files in this project:
 
-- Market area: Germany/Luxembourg for day-ahead prices
-- Date range: 2024-01-01 00:00 through 2025-01-01 00:00
+- Provider: Bundesnetzagentur (German Federal Network Agency), via SMARD.de
+- Market area: Germany/Luxembourg for day-ahead prices; Germany for load and
+  generation
+- Date range: 2024-01-01 00:00 through 2025-01-01 00:00 (Europe/Berlin)
 - Resolution: Hour
-- Download date: TODO
-- Source URL: TODO
-- License or usage notes: TODO
+- Download date: 2026-05-12
+- Download center: <https://www.smard.de/en/downloadcenter/download-market-data>
+- Datasets used: Day-ahead prices, Actual consumption, Actual generation
+
+## License and Attribution
+
+SMARD market data is published by the Bundesnetzagentur under the
+**Creative Commons Attribution 4.0 International (CC BY 4.0)** license
+(<https://creativecommons.org/licenses/by/4.0/>). SMARD documents this on its
+data-use page: <https://www.smard.de/en/datennutzung>.
+
+Required attribution when using or redistributing this data:
+
+> Source: Bundesnetzagentur | SMARD.de — licensed under CC BY 4.0.
+
+The raw CSV files themselves are not committed to this repository (see the
+top-level `.gitignore`); only documentation and DVC pipeline metadata are
+tracked. The project code (MIT licensed) and the SMARD data (CC BY 4.0) carry
+separate licenses.

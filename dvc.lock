@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python scripts/prepare_data.py --config configs/data/smard.yaml
+    deps:
+    - path: configs/data/smard.yaml
+      hash: md5
+      md5: 118218ed2837d0e5dae4672c87ed35f3
+      size: 719
+    - path: data/raw
+      hash: md5
+      md5: cb882f84960a5b223f08a3990a86f7c1.dir
+      size: 3197600
+      nfiles: 4
+    - path: scripts/prepare_data.py
+      hash: md5
+      md5: 4fe944fca1900b62e1f47471110eee42
+      size: 1601
+    outs:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: ec478d6c1287ef7bac4b02bbaa0adbd9
+      size: 165056
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: e8de432bacdabb4f02f7a1401eea0d28
+      size: 1234594
+    - path: data/processed/valid.parquet
+      hash: md5
+      md5: 92779df4838fcd001cfa6257965694eb
+      size: 160531

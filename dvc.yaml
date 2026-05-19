@@ -6,5 +6,6 @@ stages:
       - configs/data/smard.yaml
       - data/raw
     outs:
-      - data/processed
-
+      - data/processed/train.parquet
+      - data/processed/valid.parquet
+      - data/processed/test.parquet
