@@ -11,7 +11,7 @@ HORIZON = 24
 
 def _build_module() -> PriceForecastModule:
     model = PriceMLP(input_size=CONTEXT, hidden_sizes=[32], output_size=HORIZON)
-    return PriceForecastModule(model, lr=1e-3)
+    return PriceForecastModule(model, lr=1e-3, target_mean=50.0, target_std=10.0)
 
 
 def _build_dataloader(rows: int = 16) -> DataLoader[tuple[torch.Tensor, ...]]:
@@ -50,3 +50,16 @@ def test_fast_dev_run_executes_training_and_validation_steps() -> None:
     assert trainer.state.finished
     assert "train_loss" in trainer.callback_metrics
     assert "val_loss" in trainer.callback_metrics
+    assert "val_mae" in trainer.callback_metrics
+
+
+def test_metrics_are_logged_on_original_target_scale() -> None:
+    model = PriceMLP(input_size=2, hidden_sizes=[], output_size=2)
+    module = PriceForecastModule(model, target_mean=10.0, target_std=2.0)
+    batch = (torch.zeros(1, 2), torch.ones(1, 2))
+
+    loss, mae, rmse = module._shared_step(batch)
+
+    assert loss.item() >= 0
+    assert mae.item() >= 0
+    assert rmse.item() >= 0

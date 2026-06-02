@@ -74,8 +74,18 @@ dist/
 *.bak
 *~
 
-# Personal/scratch notes — keep out of the public repo
-README-02-mlops-pipeline.md
+# Personal notes and local instruction files
+README-*-mlops-pipeline.md
+*personal*.md
+*private*.md
+*scratch*.md
+*handoff*.md
+INSTRUCTIONS.local.md
+NOTES.local.md
+.private/
+.local/
+.local-notes/
+.instructions/
 
 # DVC local/cache state. Commit .dvc files and dvc.yaml, not local secrets/cache.
 .dvc/cache/

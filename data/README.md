@@ -1,7 +1,7 @@
 # Data
 
-This project uses SMARD electricity market data for German electricity price
-forecasting.
+This project uses SMARD electricity market data to forecast German day-ahead
+electricity prices.
 
 ## Local Layout
 
@@ -13,12 +13,12 @@ data/
 └── external/     # Optional weather, holidays, or other joined data
 ```
 
-The data folders are ignored by Git. Track large files with DVC once the first
-usable raw and processed datasets exist.
+The data folders are ignored by Git. Use DVC for large files when the raw and
+processed datasets are ready to track.
 
 ## Current Raw Files
 
-The project currently contains hourly 2024 SMARD exports:
+Expected hourly 2024 SMARD exports:
 
 - `data/raw/Actual_consumption_202401010000_202501010000_Hour.csv`
 - `data/raw/Actual_generation_202401010000_202501010000_Hour.csv`
@@ -29,9 +29,9 @@ intervals.
 
 ## Target Schema
 
-The processed table uses one row per hourly interval. It keeps `interval_id` as
-a monotonic key because the local SMARD timestamp repeats during the
-Europe/Berlin DST fallback hour.
+The processed table uses one row per hour. Keep `interval_id` as the modeling
+key because the local SMARD timestamp repeats during the Europe/Berlin DST
+fallback hour.
 
 Required columns:
 
@@ -53,7 +53,7 @@ Recommended columns:
 
 ## Source Notes
 
-SMARD export settings for the raw files in this project:
+SMARD export settings:
 
 - Provider: Bundesnetzagentur (German Federal Network Agency), via SMARD.de
 - Market area: Germany/Luxembourg for day-ahead prices; Germany for load and
@@ -71,11 +71,9 @@ SMARD market data is published by the Bundesnetzagentur under the
 (<https://creativecommons.org/licenses/by/4.0/>). SMARD documents this on its
 data-use page: <https://www.smard.de/en/datennutzung>.
 
-Required attribution when using or redistributing this data:
+Use this attribution when redistributing SMARD data:
 
 > Source: Bundesnetzagentur | SMARD.de — licensed under CC BY 4.0.
 
-The raw CSV files themselves are not committed to this repository (see the
-top-level `.gitignore`); only documentation and DVC pipeline metadata are
-tracked. The project code (MIT licensed) and the SMARD data (CC BY 4.0) carry
-separate licenses.
+Raw CSV files are not committed to this repository. The project code and SMARD
+data carry separate licenses.

@@ -2,31 +2,32 @@
 
 ## Model Details
 
-Project: EnergyPriceMLOps
-
-Task: German day-ahead electricity price forecasting
-
-Dataset: SMARD electricity market data
+- Project: EnergyPriceMLOps
+- Task: German day-ahead electricity price forecasting
+- Dataset: SMARD electricity market data
 
 ## Intended Use
 
-Forecast short-horizon electricity prices for MLOps demonstration and portfolio
-purposes.
+This model forecasts short-horizon German day-ahead electricity prices for a
+public engineering project. It is useful for testing the pipeline, comparing
+baselines, and exercising serving infrastructure.
 
 ## Limitations
 
-This model should not be used for real trading, financial decisions, or grid
-operations without stronger validation, monitoring, and governance.
+Do not use this model for trading, financial decisions, or grid operations. It
+uses a small feature set, a single year of data, and a narrow validation setup.
+Any production use would need broader data, stricter backtesting, monitoring,
+and governance.
 
 ## Metrics
 
-The trained model's metrics will be added here after the first real training
-run. Until then, this section records the naive baselines it must beat.
+Evaluation uses rolling-origin windows on the December 2024 test split:
+168-hour context, 24-hour forecast horizon, 721 windows, and pooled predictions
+across all windows.
+
+MAPE is omitted because day-ahead prices can be zero or negative.
 
 ### Baselines
-
-Rolling-origin evaluation on the December 2024 test split: 168-hour context,
-24-hour forecast horizon, 721 windows, predictions pooled across all windows.
 
 | Model | MAE (EUR/MWh) | RMSE (EUR/MWh) |
 |---|---|---|
@@ -34,8 +35,26 @@ Rolling-origin evaluation on the December 2024 test split: 168-hour context,
 | `last_value` | 48.14 | 92.75 |
 | `seasonal_naive_24h` | **46.21** | **81.96** |
 
-`seasonal_naive_24h` (repeat the previous day's 24-hour price profile) is the
-baseline to beat. MAPE is intentionally omitted: day-ahead prices cross zero
-and go negative, so percentage error is not a meaningful metric for this
-target. See `notebooks/02_baseline.ipynb` for the full evaluation.
+`seasonal_naive_24h` repeats the previous day's 24-hour price profile and is
+the main baseline for this repo.
 
+### First MLP Experiments
+
+The current model uses lagged target prices only. It does not use realized
+load/generation or neighbouring market prices from the forecast period.
+
+| Run | Hidden sizes | Dropout | LR | Best val MAE | Test MAE | Test RMSE |
+|---|---:|---:|---:|---:|---:|---:|
+| `mlp_default` | 256, 128 | 0.10 | 0.0003 | **28.73** | **45.22** | **65.99** |
+| `mlp_no_dropout_lr1e3` | 256, 128 | 0.00 | 0.0010 | 28.84 | 46.25 | 66.17 |
+| `mlp_small_lr1e3` | 128, 64 | 0.00 | 0.0010 | 29.76 | 46.46 | 67.46 |
+
+`mlp_default` is the current best trained model. The improvement over the
+seasonal naive baseline is small, so the next useful work is validation,
+leakage-safe feature work, and error analysis.
+
+## Export
+
+The best local checkpoint exports to ONNX as a serving graph that accepts
+original-scale price history and returns original-scale 24-hour forecasts. The
+latest local export produced max absolute Torch-vs-ONNX error `1.14e-05`.

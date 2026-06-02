@@ -1,6 +1,6 @@
 defaults:
   - data: smard
-  - model: baseline
+  - model: mlp
   - optim: adamw
   - trainer: default
   - _self_
@@ -16,7 +16,15 @@ paths:
   artifacts_dir: artifacts
 
 tracking:
-  provider: wandb
+  provider: csv
   entity: null
   project: EnergyPriceMLOps
+  mode: offline
 
+training:
+  run_name: ${model.name}
+  batch_size: 128
+  num_workers: 0
+  early_stopping_patience: 10
+  monitor_metric: val_mae
+  monitor_mode: min
