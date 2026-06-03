@@ -1,3 +1,2 @@
 name: last_value
 horizon_hours: ${data.forecasting.horizon_hours}
-

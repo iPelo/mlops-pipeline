@@ -11,6 +11,9 @@ def test_serving_onnx_export_matches_torch(tmp_path: Path) -> None:
         PriceMLP(input_size=4, hidden_sizes=[8], output_size=2),
         target_mean=10.0,
         target_std=2.0,
+        feature_means=[10.0],
+        feature_stds=[2.0],
+        context_size=4,
     ).eval()
     sample = torch.randn(3, 4)
     onnx_path = tmp_path / "model.onnx"

@@ -1,0 +1,5 @@
+outs:
+- md5: a61ae271d8050dca82a5ce804c887cd4
+  size: 705601
+  hash: md5
+  path: Actual_consumption_202401010000_202501010000_Hour.csv

@@ -1,8 +1,7 @@
 name: mlp
-input_size: ${data.forecasting.context_hours}
+input_size: computed_from_context_and_features
 hidden_sizes:
   - 256
   - 128
 dropout: 0.1
 output_size: ${data.forecasting.horizon_hours}
-

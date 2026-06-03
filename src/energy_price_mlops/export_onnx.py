@@ -17,15 +17,32 @@ from energy_price_mlops.training.lightning_module import PriceForecastModule
 class ServingPriceModel(nn.Module):
     """Wrap a normalized training model behind original-scale inputs and outputs."""
 
-    def __init__(self, model: PriceMLP, target_mean: float, target_std: float) -> None:
+    def __init__(
+        self,
+        model: PriceMLP,
+        *,
+        target_mean: float,
+        target_std: float,
+        feature_means: list[float] | None = None,
+        feature_stds: list[float] | None = None,
+        context_size: int = 1,
+    ) -> None:
         super().__init__()
         self.model = model
         self.target_mean = target_mean
         self.target_std = target_std
+        feature_means = feature_means or [target_mean]
+        feature_stds = feature_stds or [target_std]
+        flattened_means = torch.tensor(feature_means * context_size, dtype=torch.float32)
+        flattened_stds = torch.tensor(feature_stds * context_size, dtype=torch.float32)
+        self._feature_means: torch.Tensor
+        self._feature_stds: torch.Tensor
+        self.register_buffer("_feature_means", flattened_means)
+        self.register_buffer("_feature_stds", flattened_stds)
 
-    def forward(self, history: torch.Tensor) -> torch.Tensor:
-        normalized_history = (history - self.target_mean) / self.target_std
-        normalized_forecast = self.model(normalized_history)
+    def forward(self, features: torch.Tensor) -> torch.Tensor:
+        normalized_features = (features - self._feature_means) / self._feature_stds
+        normalized_forecast = self.model(normalized_features)
         return cast(torch.Tensor, normalized_forecast * self.target_std + self.target_mean)
 
 
@@ -46,9 +63,12 @@ def export_from_metrics(
         module.model,
         target_mean=module.target_mean,
         target_std=module.target_std,
+        feature_means=metrics.get("feature_means", module.feature_means),
+        feature_stds=metrics.get("feature_stds", module.feature_stds),
+        context_size=int(config["data"]["forecasting"]["context_hours"]),
     ).eval()
 
-    input_size = int(config["model"]["input_size"])
+    input_size = int(metrics.get("model_input_size", config["model"]["input_size"]))
     output_size = int(config["model"]["output_size"])
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -70,10 +90,14 @@ def export_from_metrics(
     )
 
     max_abs_error = compare_torch_and_onnx(serving_model, output, sample)
+    feature_columns = metrics.get("feature_columns", config["data"].get("feature_columns", []))
     metadata = {
         "model_name": config["model"]["name"],
-        "context_size": input_size,
+        "input_size": input_size,
+        "context_size": int(config["data"]["forecasting"]["context_hours"]),
         "horizon_size": output_size,
+        "feature_columns": feature_columns,
+        "num_features": len(feature_columns),
         "target_col": config["target"],
         "checkpoint_path": str(checkpoint_path),
         "target_mean": module.target_mean,
@@ -102,7 +126,7 @@ def compare_torch_and_onnx(
 def _load_module_from_checkpoint(metrics: dict[str, Any]) -> PriceForecastModule:
     config = metrics["config"]
     model = PriceMLP(
-        input_size=int(config["model"]["input_size"]),
+        input_size=int(metrics.get("model_input_size", config["model"]["input_size"])),
         hidden_sizes=[int(size) for size in config["model"]["hidden_sizes"]],
         dropout=float(config["model"]["dropout"]),
         output_size=int(config["model"]["output_size"]),

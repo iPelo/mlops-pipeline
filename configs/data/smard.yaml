@@ -15,6 +15,19 @@ forecasting:
   context_hours: 168
   horizon_hours: 24
 
+feature_columns:
+  - day_ahead_price_eur_mwh
+  - consumption_grid_load_mwh
+  - consumption_residual_load_mwh
+  - generation_wind_offshore_mwh
+  - generation_wind_onshore_mwh
+  - generation_photovoltaics_mwh
+  - generation_fossil_gas_mwh
+  - hour
+  - day_of_week
+  - month
+  - is_weekend
+
 files:
   actual_consumption: data/raw/Actual_consumption_202401010000_202501010000_Hour.csv
   actual_generation: data/raw/Actual_generation_202401010000_202501010000_Hour.csv

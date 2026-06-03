@@ -11,4 +11,3 @@ def test_root_mean_squared_error() -> None:
     assert root_mean_squared_error([1.0, 2.0, 3.0], [1.0, 4.0, 2.0]) == pytest.approx(
         (5 / 3) ** 0.5
     )
-

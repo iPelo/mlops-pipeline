@@ -25,6 +25,8 @@ class PriceForecastModule(L.LightningModule):
         weight_decay: float = 0.01,
         target_mean: float = 0.0,
         target_std: float = 1.0,
+        feature_means: list[float] | None = None,
+        feature_stds: list[float] | None = None,
     ) -> None:
         super().__init__()
         if target_std <= 0:
@@ -34,6 +36,8 @@ class PriceForecastModule(L.LightningModule):
         self.weight_decay = weight_decay
         self.target_mean = target_mean
         self.target_std = target_std
+        self.feature_means = feature_means or [target_mean]
+        self.feature_stds = feature_stds or [target_std]
         self.save_hyperparameters(ignore=["model"])
 
     def forward(self, inputs: Tensor) -> Tensor:

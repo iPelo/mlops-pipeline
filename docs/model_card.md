@@ -40,8 +40,9 @@ the main baseline for this repo.
 
 ### First MLP Experiments
 
-The current model uses lagged target prices only. It does not use realized
-load/generation or neighbouring market prices from the forecast period.
+The first completed training runs used lagged target prices only. They do not
+use realized load/generation or neighbouring market prices from the forecast
+period.
 
 | Run | Hidden sizes | Dropout | LR | Best val MAE | Test MAE | Test RMSE |
 |---|---:|---:|---:|---:|---:|---:|
@@ -53,8 +54,17 @@ load/generation or neighbouring market prices from the forecast period.
 seasonal naive baseline is small, so the next useful work is validation,
 leakage-safe feature work, and error analysis.
 
+### Multifeature Training Path
+
+The current training code can build rolling windows from 11 historical features:
+target price, grid load, residual load, offshore wind, onshore wind, solar,
+fossil gas generation, hour, day of week, month, and weekend flag. A one-epoch
+smoke run validated the path and produced December test MAE `45.17` EUR/MWh,
+but this is not a full experiment.
+
 ## Export
 
-The best local checkpoint exports to ONNX as a serving graph that accepts
-original-scale price history and returns original-scale 24-hour forecasts. The
-latest local export produced max absolute Torch-vs-ONNX error `1.14e-05`.
+The export path writes ONNX metadata with context length, flattened input size,
+feature columns, and target scaling. The latest multifeature smoke export used
+input size `1848` (`168 * 11`) and produced max absolute Torch-vs-ONNX error
+`1.83e-04`.

@@ -31,6 +31,7 @@ def main(config: DictConfig) -> None:
         valid_path=config.data.files.processed_valid,
         test_path=config.data.files.processed_test,
         target_col=config.target,
+        feature_cols=[str(column) for column in config.data.feature_columns],
         context_size=int(config.data.forecasting.context_hours),
         horizon_size=int(config.data.forecasting.horizon_hours),
         batch_size=int(config.training.batch_size),
@@ -39,9 +40,12 @@ def main(config: DictConfig) -> None:
     data_module.setup("fit")
     if data_module.normalizer is None:
         raise RuntimeError("DataModule did not initialize target normalization.")
+    if data_module.feature_normalizer is None:
+        raise RuntimeError("DataModule did not initialize feature normalization.")
 
+    input_size = int(config.data.forecasting.context_hours) * len(config.data.feature_columns)
     model = PriceMLP(
-        input_size=int(config.model.input_size),
+        input_size=input_size,
         hidden_sizes=[int(size) for size in config.model.hidden_sizes],
         dropout=float(config.model.dropout),
         output_size=int(config.model.output_size),
@@ -52,6 +56,8 @@ def main(config: DictConfig) -> None:
         weight_decay=float(config.optim.weight_decay),
         target_mean=data_module.normalizer.mean,
         target_std=data_module.normalizer.std,
+        feature_means=data_module.feature_normalizer.means.astype(float).tolist(),
+        feature_stds=data_module.feature_normalizer.stds.astype(float).tolist(),
     )
 
     checkpoint = ModelCheckpoint(
@@ -90,6 +96,10 @@ def main(config: DictConfig) -> None:
 
     metrics = {
         "config": OmegaConf.to_container(config, resolve=True),
+        "model_input_size": input_size,
+        "feature_columns": list(config.data.feature_columns),
+        "feature_means": data_module.feature_normalizer.means.astype(float).tolist(),
+        "feature_stds": data_module.feature_normalizer.stds.astype(float).tolist(),
         "best_checkpoint_path": checkpoint.best_model_path,
         "best_val_mae": _as_float(checkpoint.best_model_score),
         "test": test_results[0] if test_results else {},

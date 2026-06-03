@@ -68,3 +68,15 @@ for an unsupported horizon.
 The current local ONNX export has max absolute Torch-vs-ONNX error `1.14e-05`.
 Model artifacts stay ignored by Git and can be recreated from the local
 checkpoint plus `metrics.json`.
+
+### 2026-06-02 - DVC data pointers and multifeature windows
+
+The raw SMARD files are now tracked with DVC pointer files, and the processed
+parquet outputs are committed to the DVC pipeline cache. The default DVC remote
+is local-only, so public Git history contains metadata but not data bytes.
+
+The training data module now accepts configured feature columns and normalizes
+features from train-split statistics. The first default feature set uses price,
+load, residual load, selected generation columns, and calendar features. The
+serving export writes feature metadata so ONNX inference can validate the
+flattened input window.

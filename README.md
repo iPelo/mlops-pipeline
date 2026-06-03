@@ -116,10 +116,14 @@ Run the default training job:
 uv run python -m energy_price_mlops.training.train
 ```
 
-The current best local run is `mlp_default`, a univariate MLP that uses 168
-hours of price history to forecast the next 24 hours. On the December 2024 test
-split it reaches MAE `45.22` EUR/MWh and RMSE `65.99` EUR/MWh. The seasonal
-naive baseline is MAE `46.21` EUR/MWh.
+The training pipeline now supports multifeature rolling windows. The default
+feature set uses 168 hours of price, load, residual load, wind, solar, gas, and
+calendar history to forecast the next 24 hours.
+
+The previous price-only `mlp_default` run reached MAE `45.22` EUR/MWh and RMSE
+`65.99` EUR/MWh on the December 2024 test split. The seasonal naive baseline is
+MAE `46.21` EUR/MWh. A one-epoch multifeature smoke run has also been validated;
+run a full experiment before treating its metrics as a model result.
 
 ## Serving
 
@@ -131,8 +135,9 @@ uv run python -m energy_price_mlops.export_onnx \
   --output artifacts/models/price_mlp.onnx
 ```
 
-The exported graph includes target normalization, so callers send price history
-in EUR/MWh. Start the API with:
+The exported graph includes feature normalization and target inverse-scaling.
+For multifeature exports, callers send the flattened feature window through the
+API `feature_history` field. Start the API with:
 
 ```bash
 make serve

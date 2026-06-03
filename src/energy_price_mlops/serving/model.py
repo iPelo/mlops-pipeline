@@ -40,15 +40,25 @@ class OnnxPriceForecaster:
         return int(cast(int | str, value))
 
     @property
+    def input_size(self) -> int:
+        value = self.metadata.get("input_size", self.context_size)
+        return int(cast(int | str, value))
+
+    @property
+    def num_features(self) -> int:
+        value = self.metadata.get("num_features", 1)
+        return int(cast(int | str, value))
+
+    @property
     def horizon_size(self) -> int:
         value = self.metadata.get("horizon_size", 24)
         return int(cast(int | str, value))
 
-    def predict(self, history: list[float]) -> list[float]:
-        if len(history) < self.context_size:
-            raise ValueError(f"history must contain at least {self.context_size} values.")
-        recent_history = np.asarray(history[-self.context_size :], dtype=np.float32).reshape(1, -1)
-        output = self.session.run([self.output_name], {self.input_name: recent_history})[0]
+    def predict(self, features: list[float]) -> list[float]:
+        if len(features) < self.input_size:
+            raise ValueError(f"features must contain at least {self.input_size} values.")
+        recent_features = np.asarray(features[-self.input_size :], dtype=np.float32).reshape(1, -1)
+        output = self.session.run([self.output_name], {self.input_name: recent_features})[0]
         return [float(value) for value in output.reshape(-1)]
 
     @staticmethod

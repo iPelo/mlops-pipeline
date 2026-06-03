@@ -15,6 +15,9 @@ def test_onnx_price_forecaster_predicts_expected_horizon(tmp_path: Path) -> None
         PriceMLP(input_size=4, hidden_sizes=[8], output_size=2),
         target_mean=10.0,
         target_std=2.0,
+        feature_means=[10.0],
+        feature_stds=[2.0],
+        context_size=4,
     ).eval()
     onnx_path = tmp_path / "price.onnx"
     metadata_path = tmp_path / "price.json"
@@ -31,7 +34,14 @@ def test_onnx_price_forecaster_predicts_expected_horizon(tmp_path: Path) -> None
         dynamo=False,
     )
     metadata_path.write_text(
-        json.dumps({"model_name": "test_mlp", "context_size": 4, "horizon_size": 2})
+        json.dumps(
+            {
+                "model_name": "test_mlp",
+                "input_size": 4,
+                "context_size": 4,
+                "horizon_size": 2,
+            }
+        )
     )
 
     forecaster = OnnxPriceForecaster(onnx_path, metadata_path)

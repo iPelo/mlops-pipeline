@@ -25,4 +25,3 @@ def add_lag_features(
     for lag in lags:
         output[f"{target_col}_lag_{lag}"] = output[target_col].shift(lag)
     return output
-

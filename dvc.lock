@@ -5,13 +5,20 @@ stages:
     deps:
     - path: configs/data/smard.yaml
       hash: md5
-      md5: 118218ed2837d0e5dae4672c87ed35f3
-      size: 719
-    - path: data/raw
+      md5: 582b7a03028413420cfd5528e05a7941
+      size: 1007
+    - path: data/raw/Actual_consumption_202401010000_202501010000_Hour.csv
       hash: md5
-      md5: cb882f84960a5b223f08a3990a86f7c1.dir
-      size: 3197600
-      nfiles: 4
+      md5: a61ae271d8050dca82a5ce804c887cd4
+      size: 705601
+    - path: data/raw/Actual_generation_202401010000_202501010000_Hour.csv
+      hash: md5
+      md5: 6367961a103ce2e924686b9090ebf153
+      size: 1222065
+    - path: data/raw/Day-ahead_prices_202401010000_202501010000_Hour.csv
+      hash: md5
+      md5: 1ba0d53c53d285333af6bdc4fe70d0b7
+      size: 1269928
     - path: scripts/prepare_data.py
       hash: md5
       md5: 4fe944fca1900b62e1f47471110eee42

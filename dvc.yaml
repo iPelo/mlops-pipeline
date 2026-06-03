@@ -4,7 +4,9 @@ stages:
     deps:
       - scripts/prepare_data.py
       - configs/data/smard.yaml
-      - data/raw
+      - data/raw/Actual_consumption_202401010000_202501010000_Hour.csv
+      - data/raw/Actual_generation_202401010000_202501010000_Hour.csv
+      - data/raw/Day-ahead_prices_202401010000_202501010000_Hour.csv
     outs:
       - data/processed/train.parquet
       - data/processed/valid.parquet

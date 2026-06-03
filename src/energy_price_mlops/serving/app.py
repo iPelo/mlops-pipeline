@@ -18,6 +18,7 @@ MODEL = OnnxPriceForecaster(MODEL_PATH) if MODEL_PATH.exists() else None
 
 class PredictionRequest(BaseModel):
     history: list[float] = Field(..., min_length=1)
+    feature_history: list[list[float]] | None = None
     horizon: int = Field(default=24, ge=1, le=168)
 
 
@@ -49,11 +50,28 @@ def metrics() -> dict[str, float | int | str | bool | None]:
 def predict(request: PredictionRequest) -> PredictionResponse:
     start_time = perf_counter()
     if MODEL is not None and request.horizon == MODEL.horizon_size:
-        predictions = MODEL.predict(request.history)
-        stats.observe(start_time)
-        return PredictionResponse(model_name=MODEL.model_name, predictions=predictions)
+        model_features = _model_features(request)
+        if model_features is not None:
+            predictions = MODEL.predict(model_features)
+            stats.observe(start_time)
+            return PredictionResponse(model_name=MODEL.model_name, predictions=predictions)
 
     model = LastValueForecaster(horizon=request.horizon)
     predictions = model.predict(request.history)
     stats.observe(start_time)
     return PredictionResponse(model_name="last_value", predictions=predictions, fallback=True)
+
+
+def _model_features(request: PredictionRequest) -> list[float] | None:
+    if MODEL is None:
+        return None
+    if MODEL.num_features == 1:
+        return request.history
+    if request.feature_history is None:
+        return None
+    if len(request.feature_history) < MODEL.context_size:
+        return None
+    recent_rows = request.feature_history[-MODEL.context_size :]
+    if any(len(row) != MODEL.num_features for row in recent_rows):
+        return None
+    return [float(value) for row in recent_rows for value in row]

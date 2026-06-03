@@ -56,4 +56,3 @@ class SeasonalNaiveForecaster:
             )
         season = [float(value) for value in history[-self.season_length :]]
         return [season[index % self.season_length] for index in range(self.horizon)]
-

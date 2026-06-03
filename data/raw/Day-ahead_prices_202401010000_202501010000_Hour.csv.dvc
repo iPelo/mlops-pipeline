@@ -1,0 +1,5 @@
+outs:
+- md5: 1ba0d53c53d285333af6bdc4fe70d0b7
+  size: 1269928
+  hash: md5
+  path: Day-ahead_prices_202401010000_202501010000_Hour.csv
